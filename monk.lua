@@ -125,7 +125,7 @@ function ConRO.Monk.Under10(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 --Conditions
 	local _is_moving 																															= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee																			= ConRO:Targets("Melee");
-	local _target_in_10yrds 																											= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 --Warnings
 
@@ -161,7 +161,7 @@ function ConRO.Monk.Under10Def(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 --Conditions
 	local _is_moving 																					= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee															= ConRO:Targets("Melee");
-	local _target_in_10yrds 																			= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 --Warnings
 
@@ -172,7 +172,7 @@ end
 
 function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Bm_Ability, ids.Bm_Passive, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Bm_Ability, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Health = UnitHealth('player');
@@ -230,12 +230,10 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 		local _RushingJadeWind_BUFF																										= ConRO:Aura(Buff.RushingJadeWind, timeShift);
 	local _TigersLust, _TigersLust_RDY																						= ConRO:AbilityReady(Ability.TigersLust, timeShift);
 
-
-
 --Conditions
 	local _is_moving = ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee = ConRO:Targets("Melee");
-	local _target_in_10yrds = CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 --Indicators
 	ConRO:AbilityInterrupt(_SpearHandStrike, _SpearHandStrike_RDY and ConRO:Interrupt());
@@ -294,12 +292,12 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 			_BonedustBrew_RDY = false;
 		end
 
-		if _BlackoutKick_RDY and (_CharredPassions_BUFF or (tChosen[Passive.BlackoutCombo.talentID] and _BreathofFire_RDY)) then
+		if _BlackoutKick_RDY and (_CharredPassions_BUFF or (tChosen[Ability.BlackoutCombo.talentID] and _BreathofFire_RDY)) then
 			tinsert(ConRO.SuggestedSpells, _BlackoutKick);
 			_BlackoutKick_RDY = false;
 		end
 
-		if _KegSmash_RDY and not _BlackoutCombo_BUFF and (not tChosen[Passive.StormstoutsLastKeg.talentID] or _KegSmash_CHARGES > 1) then
+		if _KegSmash_RDY and not _BlackoutCombo_BUFF and (not tChosen[Ability.StormstoutsLastKeg.talentID] or _KegSmash_CHARGES > 1) then
 			tinsert(ConRO.SuggestedSpells, _KegSmash);
 			_KegSmash_RDY = false;
 		end
@@ -331,7 +329,7 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 			tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
 		end
 
-		if _KegSmash_RDY and tChosen[Passive.StormstoutsLastKeg.talentID] and _KegSmash_CHARGES >= 1 then
+		if _KegSmash_RDY and tChosen[Ability.StormstoutsLastKeg.talentID] and _KegSmash_CHARGES >= 1 then
 			tinsert(ConRO.SuggestedSpells, _KegSmash);
 			_KegSmash_RDY = false;
 		end
@@ -350,7 +348,7 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 			tinsert(ConRO.SuggestedSpells, _RushingJadeWind);
 		end
 
-		if _enemies_in_melee >= 3 or tChosen[Passive.WalkwiththeOx.talentID] then
+		if _enemies_in_melee >= 3 or tChosen[Ability.WalkwiththeOx.talentID] then
 			if _SpinningCraneKick_RDY and _Energy >= 65 then
 				tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
 			end
@@ -365,7 +363,7 @@ end
 
 function ConRO.Monk.BrewmasterDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Bm_Ability, ids.Bm_Passive, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Bm_Ability, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level																														= UnitLevel("player");
 	local _Player_Percent_Health 																									= ConRO:PercentHealth('player');
@@ -402,7 +400,7 @@ function ConRO.Monk.BrewmasterDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Conditions
 	local _is_moving 																															= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee																			= ConRO:Targets("Melee");
-	local _target_in_10yrds 																											= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 --Rotations
 		if _CelestialBrew_RDY and _PurifiedChi_BUFF then
@@ -433,7 +431,7 @@ end
 
 function ConRO.Monk.Mistweaver(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Mw_Ability, ids.Mw_Passive, ids.Mw_Form, ids.Mw_Buff, ids.Mw_Debuff, ids.Mw_PetAbility, ids.Mw_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Mw_Ability, ids.Mw_Form, ids.Mw_Buff, ids.Mw_Debuff, ids.Mw_PetAbility, ids.Mw_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level																														= UnitLevel("player");
 	local _Player_Percent_Health 																									= ConRO:PercentHealth('player');
@@ -474,7 +472,7 @@ function ConRO.Monk.Mistweaver(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 --Conditions
 	local _is_moving 																															= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee																			= ConRO:Targets("Melee");
-	local _target_in_10yrds 																											= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 	local _Statue_texture = 620831;
 	local _JadeSerpentStatue_ACTIVE = false;
@@ -519,7 +517,7 @@ end
 
 function ConRO.Monk.MistweaverDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Mw_Ability, ids.Mw_Passive, ids.Mw_Form, ids.Mw_Buff, ids.Mw_Debuff, ids.Mw_PetAbility, ids.Mw_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Mw_Ability, ids.Mw_Form, ids.Mw_Buff, ids.Mw_Debuff, ids.Mw_PetAbility, ids.Mw_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level																														= UnitLevel("player");
 	local _Player_Percent_Health 																									= ConRO:PercentHealth('player');
@@ -548,7 +546,7 @@ function ConRO.Monk.MistweaverDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Conditions
 	local _is_moving 																															= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee																			= ConRO:Targets("Melee");
-	local _target_in_10yrds 																											= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 --Rotations
 		if _HealingElixir_RDY and _Player_Percent_Health <= 80 then
@@ -567,7 +565,7 @@ end
 
 function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ww_Ability, ids.Ww_Passive, ids.Ww_Form, ids.Ww_Buff, ids.Ww_Debuff, ids.Ww_PetAbility, ids.Ww_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ww_Ability, ids.Ww_Form, ids.Ww_Buff, ids.Ww_Debuff, ids.Ww_PetAbility, ids.Ww_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level = UnitLevel("player");
 	local _Player_Health = UnitHealth('player');
@@ -637,7 +635,7 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 --Conditions
 	local _is_moving 																															= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee																			= ConRO:Targets("Melee");
-	local _target_in_10yrds 																											= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 	if _Serenity_BUFF then
 		_Chi = 99;
@@ -775,7 +773,7 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 			_BlackoutKick_RDY = false;
 			_Chi = _Chi - 1;
 		end
-		
+
 		if _ChiWave_RDY and _CracklingJadeLightning_RANGE then
 			tinsert(ConRO.SuggestedSpells, _ChiWave);
 			_ChiWave_RDY = false;
@@ -809,7 +807,7 @@ end
 
 function ConRO.Monk.WindwalkerDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells)
-	local Racial, Ability, Passive, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ww_Ability, ids.Ww_Passive, ids.Ww_Form, ids.Ww_Buff, ids.Ww_Debuff, ids.Ww_PetAbility, ids.Ww_PvPTalent, ids.Glyph;
+	local Racial, Ability, Form, Buff, Debuff, PetAbility, PvPTalent, Glyph = ids.Racial, ids.Ww_Ability, ids.Ww_Form, ids.Ww_Buff, ids.Ww_Debuff, ids.Ww_PetAbility, ids.Ww_PvPTalent, ids.Glyph;
 --Info
 	local _Player_Level																														= UnitLevel("player");
 	local _Player_Percent_Health 																									= ConRO:PercentHealth('player');
@@ -840,7 +838,7 @@ function ConRO.Monk.WindwalkerDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 --Conditions
 	local _is_moving 																															= ConRO:PlayerSpeed();
 	local _enemies_in_melee, _target_in_melee																			= ConRO:Targets("Melee");
-	local _target_in_10yrds 																											= CheckInteractDistance("target", 3);
+	local _enemies_in_10yrds, _target_in_10yrds = ConRO:Targets("10");
 
 --Rotations
 		if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
