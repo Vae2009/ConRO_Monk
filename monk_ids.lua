@@ -299,7 +299,13 @@ local ConRO_Monk, ids = ...;
 
 	}
 	ids.Mw_Buff = {
+		AncientTeachings = 388026,
 		ChiTorpedo = 119085,
+		EnvelopingMist = 124682,
+		EssenceFont = 191840,
+		FaelineStomp = 388193,
+		ManaTea = 197908,
+		ManaTeaLeaves = 115867,
 		RenewingMist = 119611,
 		TeachingsoftheMonastery = 202090,
 	}
