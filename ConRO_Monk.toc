@@ -1,7 +1,7 @@
 ## Title:-|cffFFFFFFConRO|r- |cff00FF96Monk|r
-## Version: 10.2.2
+## Version: 10.2.3
 ## Author: Vae
-## Interface: 100200
+## Interface: 100205
 ## Dependencies: ConRO
 ## LoadOnDemand: 1
 
