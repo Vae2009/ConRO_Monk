@@ -340,17 +340,19 @@ function ConRO.Monk.BrewmasterDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Bm_Ability, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent;
 
 --Abilities
-	local _CelestialBrew, _CelestialBrew_RDY																			= ConRO:AbilityReady(Ability.CelestialBrew, timeShift);
-	local _ExpelHarm, _ExpelHarm_RDY																							= ConRO:AbilityReady(Ability.ExpelHarm, timeShift);
-	local _FortifyingBrew, _FortifyingBrew_RDY																		= ConRO:AbilityReady(Ability.FortifyingBrew, timeShift);
-	local _PurifyingBrew, _PurifyingBrew_RDY																			= ConRO:AbilityReady(Ability.PurifyingBrew, timeShift);
-		local _PurifiedChi_BUFF 																											= ConRO:Aura(Buff.PurifiedChi, timeShift);
-		local _PurifyingBrew_CHARGES																									= ConRO:SpellCharges(Ability.PurifyingBrew.spellID);
-		local _HighStagger_DEBUFF																											= ConRO:Aura(Debuff.HighStagger, timeShift, 'HARMFUL');
-		local _MediumStagger_DEBUFF																										= ConRO:Aura(Debuff.MediumStagger, timeShift, 'HARMFUL');
-	local _ZenMeditation, _ZenMeditation_RDY																			= ConRO:AbilityReady(Ability.ZenMeditation, timeShift);
+	local _CelestialBrew, _CelestialBrew_RDY = ConRO:AbilityReady(Ability.CelestialBrew, timeShift);
+	local _ExpelHarm, _ExpelHarm_RDY = ConRO:AbilityReady(Ability.ExpelHarm, timeShift);
+	local _FortifyingBrew, _FortifyingBrew_RDY = ConRO:AbilityReady(Ability.FortifyingBrew, timeShift);
+	local _PurifyingBrew, _PurifyingBrew_RDY = ConRO:AbilityReady(Ability.PurifyingBrew, timeShift);
+		local _PurifiedChi_BUFF = ConRO:Aura(Buff.PurifiedChi, timeShift);
+		local _PurifyingBrew_CHARGES = ConRO:SpellCharges(Ability.PurifyingBrew.spellID);
+		local _HighStagger_DEBUFF = ConRO:Aura(Debuff.HighStagger, timeShift, 'HARMFUL');
+		local _MediumStagger_DEBUFF = ConRO:Aura(Debuff.MediumStagger, timeShift, 'HARMFUL');
+	local _Vivify, _Vivify_RDY = ConRO:AbilityReady(Ability.Vivify, timeShift);
+		local _VivacousVivification_BUFF = ConRO:Aura(Buff.VivacousVivification, timeShift);
+	local _ZenMeditation, _ZenMeditation_RDY = ConRO:AbilityReady(Ability.ZenMeditation, timeShift);
 
-	local _DampenHarm, _DampenHarm_RDY																						= ConRO:AbilityReady(Ability.DampenHarm, timeShift);
+	local _DampenHarm, _DampenHarm_RDY = ConRO:AbilityReady(Ability.DampenHarm, timeShift);
 
 --Rotations
 		if _CelestialBrew_RDY and _PurifiedChi_BUFF then
@@ -363,6 +365,10 @@ function ConRO.Monk.BrewmasterDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 
 		if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
 			tinsert(ConRO.SuggestedDefSpells, _ExpelHarm);
+		end
+
+		if _Vivify_RDY and _VivacousVivification_BUFF and _Player_Percent_Health <= 75 then
+			tinsert(ConRO.SuggestedDefSpells, _Vivify);
 		end
 
 		if _DampenHarm_RDY then
@@ -689,10 +695,21 @@ function ConRO.Monk.WindwalkerDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _ExpelHarm, _ExpelHarm_RDY = ConRO:AbilityReady(Ability.ExpelHarm, timeShift);
 	local _FortifyingBrew, _FortifyingBrew_RDY = ConRO:AbilityReady(Ability.FortifyingBrew, timeShift);
 	local _TouchofKarma, _TouchofKarma_RDY = ConRO:AbilityReady(Ability.TouchofKarma, timeShift);
+	local _Vivify, _Vivify_RDY = ConRO:AbilityReady(Ability.Vivify, timeShift);
+		local _VivacousVivification_BUFF = ConRO:Aura(Buff.VivacousVivification, timeShift);
+
+--Conditions
+	if tChosen[Ability.CombatWisdom.talentID] then
+		_ExpelHarm_RDY = false;
+	end
 
 --Rotations
 		if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
 			tinsert(ConRO.SuggestedDefSpells, _ExpelHarm);
+		end
+
+		if _Vivify_RDY and _VivacousVivification_BUFF and _Player_Percent_Health <= 75 then
+			tinsert(ConRO.SuggestedDefSpells, _Vivify);
 		end
 
 		if _TouchofKarma_RDY then

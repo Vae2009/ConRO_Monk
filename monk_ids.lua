@@ -198,6 +198,7 @@ local ConRO_Monk, ids = ...;
 		ChiTorpedo = 119085,
 		RushingJadeWind = 116847,
 		PurifiedChi = 325092,
+		VivacousVivification = 392883,
 	}
 	ids.Bm_Debuff = {
 		KegSmash = 121253,
@@ -404,6 +405,7 @@ local ConRO_Monk, ids = ...;
 		ManaTeaLeaves = 115867,
 		RenewingMist = 119611,
 		TeachingsoftheMonastery = 202090,
+		VivacousVivification = 392883,
 	}
 	ids.Mw_Debuff = {
 
@@ -600,6 +602,7 @@ local ConRO_Monk, ids = ...;
 		DanceofChiJi = 325202,
 		StormEarthandFire = 137639,
 		TeachingsoftheMonastery = 202090,
+		VivacousVivification = 392883,
 	}
 	ids.Ww_Debuff = {
 		FaeExposure = 395414,
