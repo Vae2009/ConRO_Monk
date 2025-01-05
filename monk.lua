@@ -856,6 +856,7 @@ function ConRO:ComboStrikes()
 		ids.Ww_Ability.ChiBurst.spellID,
 		ids.Ww_Ability.CracklingJadeLightning.spellID,
 		ids.Ww_Ability.StrikeoftheWindlord.spellID,
+		148187,
 		ids.Ww_Ability.TouchofDeath.spellID,
 		ids.Ww_Ability.JadefireStomp.spellID,
 		ids.Ww_Ability.StormEarthandFire.spellID,
