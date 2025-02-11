@@ -447,6 +447,7 @@ function ConRO.Monk.Mistweaver(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 		local _RenewingMist_BUFF = ConRO:Aura(Buff.RenewingMist, timeShift);
 	local _RisingSunKick, _RisingSunKick_RDY, _RisingSunKick_CD, _RisingSunKick_MaxCD = ConRO:AbilityReady(Ability.RisingSunKick, timeShift);
 	local _Roll, _Roll_RDY = ConRO:AbilityReady(Ability.Roll, timeShift);
+	local _SpearHandStrike, _SpearHandStrike_RDY = ConRO:AbilityReady(Ability.SpearHandStrike, timeShift);
 	local _SpinningCraneKick, _SpinningCraneKick_RDY = ConRO:AbilityReady(Ability.SpinningCraneKick, timeShift);
 	local _SummonJadeSerpentStatue, _SummonJadeSerpentStatue_RDY = ConRO:AbilityReady(Ability.SummonJadeSerpentStatue, timeShift);
 	local _TigerPalm, _TigerPalm_RDY = ConRO:AbilityReady(Ability.TigerPalm, timeShift);
@@ -466,6 +467,7 @@ function ConRO.Monk.Mistweaver(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 	end
 
 --Indicators
+	ConRO:AbilityInterrupt(_SpearHandStrike, _SpearHandStrike_RDY and ConRO:Interrupt());
 	ConRO:AbilityPurge(_ArcaneTorrent, _ArcaneTorrent_RDY and _target_in_melee and ConRO:Purgable());
 	ConRO:AbilityMovement(_Roll, _Roll_RDY and not tChosen[Ability.ChiTorpedo.talentID]);
 	ConRO:AbilityMovement(_ChiTorpedo, _ChiTorpedo_RDY and not _ChiTorpedo_BUFF);

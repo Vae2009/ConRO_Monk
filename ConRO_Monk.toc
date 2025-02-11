@@ -1,5 +1,5 @@
 ## Title:-|cffFFFFFFConRO|r- |cff00FF96Monk|r
-## Version: 11.0.3
+## Version: 11.0.4
 ## Author: Vae
 ## Interface: 110007
 ## Dependencies: ConRO
