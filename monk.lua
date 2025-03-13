@@ -4,6 +4,7 @@ end
 ConRO.Monk.CheckPvPTalents = function()
 end
 local ConRO_Monk, ids = ...;
+local Ability, Buff, Debuff, PvP_Talent = _, _, _, _;
 
 function ConRO:EnableRotationModule(mode)
 	mode = mode or 0;
@@ -11,19 +12,23 @@ function ConRO:EnableRotationModule(mode)
 	self.ModuleOnEnable = ConRO.Monk.CheckPvPTalents;
 	if mode == 0 then
 		self.Description = "Monk [No Specialization Under 10]";
-		self.NextSpell = ConRO.Monk.Under10;
+		self.NextSpell = ConRO.Monk.Disabled;
+		self.NextDef = ConRO.Monk.Disabled;
 		self.ToggleHealer();
 	end;
 	if mode == 1 then
 		self.Description = "Monk [Brewmaster - Tank]";
 		if ConRO.db.profile._Spec_1_Enabled then
+			Ability, Buff, Debuff, PvP_Talent = ids.brewmaster.ability, ids.brewmaster.buff, ids.brewmaster.debuff, ids.brewmaster.pvp_talent;
 			self.NextSpell = ConRO.Monk.Brewmaster;
+			self.NextDef = ConRO.Monk.BrewmasterDef;
 			self.ToggleDamage();
 			self.BlockAoE();
 			ConROWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 			ConRODefenseWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 		else
 			self.NextSpell = ConRO.Monk.Disabled;
+			self.NextDef = ConRO.Monk.Disabled;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(0);
 			ConRODefenseWindow:SetAlpha(0);
@@ -32,12 +37,15 @@ function ConRO:EnableRotationModule(mode)
 	if mode == 2 then
 		self.Description = "Monk [Mistweaver - Healer]";
 		if ConRO.db.profile._Spec_2_Enabled then
+			Ability, Buff, Debuff, PvP_Talent = ids.mistweaver.ability, ids.mistweaver.buff, ids.mistweaver.debuff, ids.mistweaver.pvp_talent;
 			self.NextSpell = ConRO.Monk.Mistweaver;
+			self.NextDef = ConRO.Monk.MistweaverDef;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 			ConRODefenseWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 		else
 			self.NextSpell = ConRO.Monk.Disabled;
+			self.NextDef = ConRO.Monk.Disabled;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(0);
 			ConRODefenseWindow:SetAlpha(0);
@@ -46,12 +54,15 @@ function ConRO:EnableRotationModule(mode)
 	if mode == 3 then
 		self.Description = "Monk [Windwalker - Melee]";
 		if ConRO.db.profile._Spec_3_Enabled then
+			Ability, Buff, Debuff, PvP_Talent = ids.windwalker.ability, ids.windwalker.buff, ids.windwalker.debuff, ids.windwalker.pvp_talent;
 			self.NextSpell = ConRO.Monk.Windwalker;
+			self.NextDef = ConRO.Monk.WindwalkerDef;
 			self.ToggleDamage();
 			ConROWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 			ConRODefenseWindow:SetAlpha(ConRO.db.profile.transparencyWindow);
 		else
 			self.NextSpell = ConRO.Monk.Disabled;
+			self.NextDef = ConRO.Monk.Disabled;
 			self.ToggleHealer();
 			ConROWindow:SetAlpha(0);
 			ConRODefenseWindow:SetAlpha(0);
@@ -62,31 +73,7 @@ function ConRO:EnableRotationModule(mode)
 end
 
 function ConRO:EnableDefenseModule(mode)
-	mode = mode or 0;
-	if mode == 0 then
-		self.NextDef = ConRO.Monk.Under10Def;
-	end;
-	if mode == 1 then
-		if ConRO.db.profile._Spec_1_Enabled then
-			self.NextDef = ConRO.Monk.BrewmasterDef;
-		else
-			self.NextDef = ConRO.Monk.Disabled;
-		end
-	end;
-	if mode == 2 then
-		if ConRO.db.profile._Spec_2_Enabled then
-			self.NextDef = ConRO.Monk.MistweaverDef;
-		else
-			self.NextDef = ConRO.Monk.Disabled;
-		end
-	end;
-	if mode == 3 then
-		if ConRO.db.profile._Spec_3_Enabled then
-			self.NextDef = ConRO.Monk.WindwalkerDef;
-		else
-			self.NextDef = ConRO.Monk.Disabled;
-		end
-	end;
+
 end
 
 function ConRO:UNIT_SPELLCAST_SUCCEEDED(event, unitID, lineID, spellID)
@@ -132,7 +119,7 @@ local _ArcaneTorrent, _ArcaneTorrent_RDY = _, _;
 local _Cannibalize, _Cannibalize_RDY = _, _;
 local _GiftoftheNaaru, _GiftoftheNaaru_RDY = _, _;
 
-local HeroSpec, Racial = ids.HeroSpec, ids.Racial;
+local HeroSpec, Racial = ids.hero_spec, ids.racial;
 
 function ConRO:Stats()
 	_Player_Level = UnitLevel("player");
@@ -166,36 +153,9 @@ function ConRO:Stats()
 
 end
 
-function ConRO.Monk.Under10(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
-	wipe(ConRO.SuggestedSpells);
-	ConRO:Stats();
-
---Abilities
-
---Warnings
-
---Rotations
-
-
-	return nil;
-end
-
-function ConRO.Monk.Under10Def(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
-	wipe(ConRO.SuggestedDefSpells);
-	ConRO:Stats();
---Abilities
-
---Warnings
-
---Rotations
-
-return nil;
-end
-
 function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Bm_Ability, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent;
 
 --Abilities
 	local _BlackoutKick, _BlackoutKick_RDY = ConRO:AbilityReady(Ability.BlackoutKick, timeShift);
@@ -231,7 +191,6 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 	if tChosen[Ability.PresstheAdvantage.talentID] then
 		_TigerPalm_RDY = false;
 	end
-
 
 --Indicators
 	ConRO:AbilityInterrupt(_SpearHandStrike, _SpearHandStrike_RDY and ConRO:Interrupt());
@@ -281,14 +240,21 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 				break;
 			end
 
-			if _BlackoutKick_RDY and (_CharredPassions_BUFF or (tChosen[Ability.BlackoutCombo.talentID] and _BreathofFire_RDY)) then
+			if _BlackoutKick_RDY then
 				tinsert(ConRO.SuggestedSpells, _BlackoutKick);
 				_BlackoutKick_RDY = false;
 				_Queue = _Queue + 1;
 				break;
 			end
 
-			if _KegSmash_RDY and not _BlackoutCombo_BUFF and (not tChosen[Ability.StormstoutsLastKeg.talentID] or _KegSmash_CHARGES > 1) then
+			if _TigerPalm_RDY and _Energy >= 50 and _BlackoutCombo_BUFF then
+				tinsert(ConRO.SuggestedSpells, _TigerPalm);
+				_BlackoutCombo_BUFF = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _KegSmash_RDY and _KegSmash_CHARGES >= 2 then
 				tinsert(ConRO.SuggestedSpells, _KegSmash);
 				_KegSmash_RDY = false;
 				_Queue = _Queue + 1;
@@ -309,36 +275,9 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 				break;
 			end
 
-			if _BlackoutKick_RDY then
-				tinsert(ConRO.SuggestedSpells, _BlackoutKick);
-				_BlackoutKick_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
-
 			if _RisingSunKick_RDY then
 				tinsert(ConRO.SuggestedSpells, _RisingSunKick);
 				_RisingSunKick_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
-
-			if _ExplodingKeg_RDY and _RushingJadeWind_BUFF and ConRO:FullMode(_ExplodingKeg) then
-				tinsert(ConRO.SuggestedSpells, _ExplodingKeg);
-				_ExplodingKeg_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
-
-			if _SpinningCraneKick_RDY and (_CharredPassions_BUFF or _ExplodingKeg_DEBUFF) then
-				tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
-				_Queue = _Queue + 1;
-				break;
-			end
-
-			if _KegSmash_RDY and tChosen[Ability.StormstoutsLastKeg.talentID] and _KegSmash_CHARGES >= 1 then
-				tinsert(ConRO.SuggestedSpells, _KegSmash);
-				_KegSmash_RDY = false;
 				_Queue = _Queue + 1;
 				break;
 			end
@@ -350,9 +289,29 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 				break;
 			end
 
+			if _ExplodingKeg_RDY and _RushingJadeWind_BUFF and ConRO:FullMode(_ExplodingKeg) then
+				tinsert(ConRO.SuggestedSpells, _ExplodingKeg);
+				_ExplodingKeg_RDY = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _SpinningCraneKick_RDY and _CharredPassions_BUFF then
+				tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+				_Queue = _Queue + 1;
+				break;
+			end
+
 			if _RushingJadeWind_RDY and not _RushingJadeWind_BUFF then
 				tinsert(ConRO.SuggestedSpells, _RushingJadeWind);
 				_RushingJadeWind_RDY = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _KegSmash_RDY and tChosen[Ability.StormstoutsLastKeg.talentID] and _KegSmash_CHARGES >= 1 then
+				tinsert(ConRO.SuggestedSpells, _KegSmash);
+				_KegSmash_RDY = false;
 				_Queue = _Queue + 1;
 				break;
 			end
@@ -376,13 +335,12 @@ function ConRO.Monk.Brewmaster(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 			break;
 		end
 	until _Queue >= 3;
-return nil;
+	return nil;
 end
 
 function ConRO.Monk.BrewmasterDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Bm_Ability, ids.Bm_Form, ids.Bm_Buff, ids.Bm_Debuff, ids.Bm_PetAbility, ids.Bm_PvPTalent;
 
 --Abilities
 	local _CelestialBrew, _CelestialBrew_RDY = ConRO:AbilityReady(Ability.CelestialBrew, timeShift);
@@ -400,36 +358,35 @@ function ConRO.Monk.BrewmasterDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	local _DampenHarm, _DampenHarm_RDY = ConRO:AbilityReady(Ability.DampenHarm, timeShift);
 
 --Rotations
-		if _CelestialBrew_RDY and _PurifiedChi_BUFF then
-			tinsert(ConRO.SuggestedDefSpells, _CelestialBrew);
-		end
+	if _CelestialBrew_RDY and _PurifiedChi_BUFF then
+		tinsert(ConRO.SuggestedDefSpells, _CelestialBrew);
+	end
 
-		if _PurifyingBrew_RDY and ((_PurifyingBrew_CHARGES >= 1 and _HighStagger_DEBUFF) or (_MediumStagger_DEBUFF and (_PurifyingBrew_CHARGES >= 2 or _Player_Percent_Health <= 50))) then
-			tinsert(ConRO.SuggestedDefSpells, _PurifyingBrew);
-		end
+	if _PurifyingBrew_RDY and ((_PurifyingBrew_CHARGES >= 1 and _HighStagger_DEBUFF) or (_MediumStagger_DEBUFF and (_PurifyingBrew_CHARGES >= 2 or _Player_Percent_Health <= 50))) then
+		tinsert(ConRO.SuggestedDefSpells, _PurifyingBrew);
+	end
 
-		if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
-			tinsert(ConRO.SuggestedDefSpells, _ExpelHarm);
-		end
+	if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
+		tinsert(ConRO.SuggestedDefSpells, _ExpelHarm);
+	end
 
-		if _Vivify_RDY and _VivacousVivification_BUFF and _Player_Percent_Health <= 75 then
-			tinsert(ConRO.SuggestedDefSpells, _Vivify);
-		end
+	if _Vivify_RDY and _VivacousVivification_BUFF and _Player_Percent_Health <= 75 then
+		tinsert(ConRO.SuggestedDefSpells, _Vivify);
+	end
 
-		if _DampenHarm_RDY then
-			tinsert(ConRO.SuggestedDefSpells, _DampenHarm);
-		end
+	if _DampenHarm_RDY then
+		tinsert(ConRO.SuggestedDefSpells, _DampenHarm);
+	end
 
-		if _FortifyingBrew_RDY then
-			tinsert(ConRO.SuggestedDefSpells, _FortifyingBrew);
-		end
+	if _FortifyingBrew_RDY then
+		tinsert(ConRO.SuggestedDefSpells, _FortifyingBrew);
+	end
 	return nil;
 end
 
 function ConRO.Monk.Mistweaver(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Mw_Ability, ids.Mw_Form, ids.Mw_Buff, ids.Mw_Debuff, ids.Mw_PetAbility, ids.Mw_PvPTalent;
 
 --Abilities
 	local _BlackoutKick, _BlackoutKick_RDY = ConRO:AbilityReady(Ability.BlackoutKick, timeShift);
@@ -571,32 +528,30 @@ function ConRO.Monk.Mistweaver(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 			break;
 		end
 	until _Queue >= 3;
-return nil;
+	return nil;
 end
 
 function ConRO.Monk.MistweaverDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Mw_Ability, ids.Mw_Form, ids.Mw_Buff, ids.Mw_Debuff, ids.Mw_PetAbility, ids.Mw_PvPTalent;
 
 --Abilities
 	local _FortifyingBrew, _FortifyingBrew_RDY = ConRO:AbilityReady(Ability.FortifyingBrew, timeShift);
 
 --Rotations
-		if _FortifyingBrew_RDY then
-			tinsert(ConRO.SuggestedDefSpells, _FortifyingBrew);
-		end
+	if _FortifyingBrew_RDY then
+		tinsert(ConRO.SuggestedDefSpells, _FortifyingBrew);
+	end
 	return nil;
 end
 
 function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Ww_Ability, ids.Ww_Form, ids.Ww_Buff, ids.Ww_Debuff, ids.Ww_PetAbility, ids.Ww_PvPTalent;
 
 --Abilities
 	local _BlackoutKick, _BlackoutKick_RDY = ConRO:AbilityReady(Ability.BlackoutKick, timeShift);
-		local _BlackoutKick_BUFF = ConRO:Aura(Buff.BlackoutKick, timeShift);
+		local _, blackout_kick_count = ConRO:Aura(Buff.BlackoutKick, timeShift);
 		local _, _TeachingsoftheMonastery_COUNT = ConRO:Aura(Buff.TeachingsoftheMonastery, timeShift);
 	local _CelestialConduit, _CelestialConduit_RDY = ConRO:AbilityReady(Ability.CelestialConduit, timeShift);
 	local _ChiBurst, _ChiBurst_RDY = ConRO:AbilityReady(Ability.ChiBurst, timeShift);
@@ -612,11 +567,12 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 	local _InvokeXuentheWhiteTiger, _InvokeXuentheWhiteTiger_RDY = ConRO:AbilityReady(Ability.InvokeXuentheWhiteTiger, timeShift);
 	local _RisingSunKick, _RisingSunKick_RDY, _RisingSunKick_CD = ConRO:AbilityReady(Ability.RisingSunKick, timeShift);
 	local _Roll, _Roll_RDY = ConRO:AbilityReady(Ability.Roll, timeShift);
+	local slicing_winds, slicing_winds_rdy = ConRO:AbilityReady(Ability.slicing_winds, timeShift);
 	local _SpearHandStrike, _SpearHandStrike_RDY = ConRO:AbilityReady(Ability.SpearHandStrike, timeShift);
 	local _SpinningCraneKick, _SpinningCraneKick_RDY = ConRO:AbilityReady(Ability.SpinningCraneKick, timeShift);
-		local _, _DanceofChiJi_COUNT = ConRO:Aura(Buff.DanceofChiJi, timeShift);
+		local dance_of_chiji, dance_of_chiji_count = ConRO:Aura(Buff.DanceofChiJi, timeShift);
 		local _MarkoftheCrane_DEBUFF = ConRO:TargetAura(Debuff.MarkoftheCrane, timeShift);
-		local _, _TheEmperorsCapacitor_COUNT = ConRO:Form(Form.TheEmperorsCapacitor);
+		local _, _TheEmperorsCapacitor_COUNT = ConRO:Form(Buff.TheEmperorsCapacitor);
 	local _StormEarthandFire, _StormEarthandFire_RDY = ConRO:AbilityReady(Ability.StormEarthandFire, timeShift);
 		local _StormEarthandFire_BUFF = ConRO:Aura(Buff.StormEarthandFire, timeShift);
 		local _StormEarthandFire_CHARGES, _StormEarthandFire_MaxCHARGES = ConRO:SpellCharges(_StormEarthandFire);
@@ -625,6 +581,10 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 	local _TigersLust, _TigersLust_RDY = ConRO:AbilityReady(Ability.TigersLust, timeShift);
 	local _TouchofDeath, _TouchofDeath_RDY = ConRO:AbilityReady(Ability.TouchofDeath, timeShift);
 	local _WhirlingDragonPunch, _WhirlingDragonPunch_RDY, _WhirlingDragonPunch_CD = ConRO:AbilityReady(Ability.WhirlingDragonPunch, timeShift);
+
+--Auras
+	local heart_of_the_jade_serpent_buff = ConRO:Aura(Buff.heart_of_the_jade_serpent, timeShift);
+	local chi_energy_buff, chi_energy_count = ConRO:Aura(Buff.chi_energy, timeShift);
 
 --Conditions
 	local _LastCombo = ConRO:ComboStrikes();
@@ -665,6 +625,26 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 				break;
 			end
 
+			if not _in_combat then
+				if _TigerPalm_RDY then
+					tinsert(ConRO.SuggestedSpells, _TigerPalm);
+					_TigerPalm_RDY = false;
+					_Chi = _Chi + 2;
+					_Energy = _Energy - _TigerPalm_COST;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _RisingSunKick_RDY and ((ConRO_AutoButton:IsVisible() and _enemies_in_melee <= 2) or ConRO_SingleButton:IsVisible()) then
+					tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+					_RisingSunKick_RDY = false;
+					_XuensBattlegear_BUFF = false;
+					_Chi = _Chi - 2;
+					_Queue = _Queue + 1;
+					break;
+				end
+			end
+
 			if _InvokeXuentheWhiteTiger_RDY and ConRO:FullMode(_InvokeXuentheWhiteTiger) then
 				tinsert(ConRO.SuggestedSpells, _InvokeXuentheWhiteTiger);
 				_InvokeXuentheWhiteTiger_RDY = false;
@@ -686,7 +666,199 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 				break;
 			end
 
-			if _TigerPalm_RDY and _Chi <= (_Chi_Max - 2) and _Energy >= _Energy_Max - 15 and _LastCombo ~= _TigerPalm then
+			if heart_of_the_jade_serpent_buff then
+				if (ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 3) or ConRO_AoEButton:IsVisible() then
+					if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and dance_of_chiji_count >= 2 then
+						tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+						_SpinningCraneKick_RDY = false;
+						dance_of_chiji_count = dance_of_chiji_count - 1;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 20 and _LastCombo ~= _CracklingJadeLightning then
+						tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
+						_TheEmperorsCapacitor_COUNT = 0;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _FistsofFury_RDY and _Chi >= 3 and _LastCombo ~= _FistsofFury then
+						tinsert(ConRO.SuggestedSpells, _FistsofFury);
+						_FistsofFury_RDY = false;
+						_Chi = _Chi - 3;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _SpinningCraneKick_RDY and _Chi >= 2 and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and chi_energy_count >= 30 then
+						tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+						_SpinningCraneKick_RDY = false;
+						if dance_of_chiji_count > 0 then
+							dance_of_chiji_count = dance_of_chiji_count - 1;
+						else
+							_Chi = _Chi - 2;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _RisingSunKick_RDY and _Chi >= 2 and _XuensBattlegear_BUFF and _LastCombo ~= _RisingSunKick then
+						tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+						_RisingSunKick_RDY = false;
+						_XuensBattlegear_BUFF = false;
+						_Chi = _Chi - 2;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _WhirlingDragonPunch_RDY and _FistsofFury_CD > 0 and _RisingSunKick_CD > 0 and _LastCombo ~= _WhirlingDragonPunch then
+						tinsert(ConRO.SuggestedSpells, _WhirlingDragonPunch);
+						_WhirlingDragonPunch_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _RisingSunKick_RDY and _Chi >= 2 and not _FistsofFury_RDY and _WhirlingDragonPunch_CD <= 0 and _LastCombo ~= _RisingSunKick then
+						tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+						_RisingSunKick_RDY = false;
+						_XuensBattlegear_BUFF = false;
+						_Chi = _Chi - 2;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if slicing_winds_rdy then
+						tinsert(ConRO.SuggestedSpells, slicing_winds);
+						slicing_winds_rdy = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _TigerPalm_RDY and _Chi <= 5 and _Energy >= _Energy_Max - 15 and _LastCombo ~= _TigerPalm then
+						tinsert(ConRO.SuggestedSpells, _TigerPalm);
+						_TigerPalm_RDY = false;
+						_Chi = _Chi + 2;
+						_Energy = _Energy - _TigerPalm_COST;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _BlackoutKick_RDY and blackout_kick_count >= 2 and _LastCombo ~= _BlackoutKick then
+						tinsert(ConRO.SuggestedSpells, _BlackoutKick);
+						_BlackoutKick_RDY = false;
+						if blackout_kick_count > 0 then
+							blackout_kick_count = blackout_kick_count - 1;
+						else
+							_Chi = _Chi - 1;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and dance_of_chiji_count >= 1 then
+						tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+						_SpinningCraneKick_RDY = false;
+						dance_of_chiji_count = dance_of_chiji_count - 1;
+						_Queue = _Queue + 1;
+						break;
+					end
+				else
+					if _FistsofFury_RDY and _Chi >= 3 and _LastCombo ~= _FistsofFury then
+						tinsert(ConRO.SuggestedSpells, _FistsofFury);
+						_FistsofFury_RDY = false;
+						_Chi = _Chi - 3;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _RisingSunKick_RDY and _Chi >= 2 and _LastCombo ~= _RisingSunKick then
+						tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+						_RisingSunKick_RDY = false;
+						_XuensBattlegear_BUFF = false;
+						_Chi = _Chi - 2;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if slicing_winds_rdy then
+						tinsert(ConRO.SuggestedSpells, slicing_winds);
+						slicing_winds_rdy = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and dance_of_chiji_count >= 2 then
+						tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+						_SpinningCraneKick_RDY = false;
+						dance_of_chiji_count = dance_of_chiji_count - 1;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _WhirlingDragonPunch_RDY and _FistsofFury_CD > 0 and _RisingSunKick_CD > 0 and _LastCombo ~= _WhirlingDragonPunch then
+						tinsert(ConRO.SuggestedSpells, _WhirlingDragonPunch);
+						_WhirlingDragonPunch_RDY = false;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _TigerPalm_RDY and _LastCombo ~= _TigerPalm then
+						tinsert(ConRO.SuggestedSpells, _TigerPalm);
+						_TigerPalm_RDY = false;
+						_Chi = _Chi + 2;
+						_Energy = _Energy - _TigerPalm_COST;
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _BlackoutKick_RDY and blackout_kick_count >= 2 and _LastCombo ~= _BlackoutKick then
+						tinsert(ConRO.SuggestedSpells, _BlackoutKick);
+						_BlackoutKick_RDY = false;
+						if blackout_kick_count > 0 then
+							blackout_kick_count = blackout_kick_count - 1;
+						else
+							_Chi = _Chi - 1;
+						end
+						_Queue = _Queue + 1;
+						break;
+					end
+
+					if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and dance_of_chiji_count >= 1 then
+						tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+						_SpinningCraneKick_RDY = false;
+						dance_of_chiji_count = dance_of_chiji_count - 1;
+						_Queue = _Queue + 1;
+						break;
+					end
+				end
+			end
+
+			if _StrikeoftheWindlord_RDY and _Chi >= 2 and _LastCombo ~= _StrikeoftheWindlord and not heart_of_the_jade_serpent_buff and ConRO:HeroSpec(HeroSpec.ConduitoftheCelestials) and tChosen[Ability.HeartoftheJadeSerpent.talentID] then
+				tinsert(ConRO.SuggestedSpells, _StrikeoftheWindlord);
+				_StrikeoftheWindlord_RDY = false;
+				_Chi = _Chi - 2;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _CelestialConduit_RDY and _LastCombo ~= _CelestialConduit and not heart_of_the_jade_serpent_buff and ConRO:HeroSpec(HeroSpec.ConduitoftheCelestials) then
+				tinsert(ConRO.SuggestedSpells, _CelestialConduit);
+				_CelestialConduit_RDY = false;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _RisingSunKick_RDY and _Chi >= 2 and _XuensBattlegear_BUFF and _LastCombo ~= _RisingSunKick and ((ConRO_AutoButton:IsVisible() and _enemies_in_melee <= 2) or ConRO_SingleButton:IsVisible()) then
+				tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+				_RisingSunKick_RDY = false;
+				_XuensBattlegear_BUFF = false;
+				_Chi = _Chi - 2;
+				_Queue = _Queue + 1;
+				break;
+			end
+
+			if _TigerPalm_RDY and _Chi <= 5 and _Energy >= _Energy_Max - 15 and _LastCombo ~= _TigerPalm then
 				tinsert(ConRO.SuggestedSpells, _TigerPalm);
 				_TigerPalm_RDY = false;
 				_Chi = _Chi + 2;
@@ -695,124 +867,230 @@ function ConRO.Monk.Windwalker(_, timeShift, currentSpell, gcd, tChosen, pvpChos
 				break;
 			end
 
-			if _SpinningCraneKick_RDY and _FistsofFury_RANGE and _DanceofChiJi_COUNT >= 2 and _LastCombo ~= _SpinningCraneKick and ((ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 3) or ConRO_AoEButton:IsVisible()) then
+			if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and dance_of_chiji_count >= 2 then
 				tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
 				_SpinningCraneKick_RDY = false;
-				_DanceofChiJi_COUNT = _DanceofChiJi_COUNT - 1;
+				dance_of_chiji_count = dance_of_chiji_count - 1;
 				_Queue = _Queue + 1;
 				break;
 			end
 
-			if _RisingSunKick_RDY and _Chi >= 2 and _FistsofFury_CD > 0 and _WhirlingDragonPunch_CD <= 0 and _LastCombo ~= _RisingSunKick and ((ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 3) or ConRO_AoEButton:IsVisible()) then
-				tinsert(ConRO.SuggestedSpells, _RisingSunKick);
-				_RisingSunKick_RDY = false;
-				_Chi = _Chi - 2;
-				_Queue = _Queue + 1;
-				break;
-			end
+			if (ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 3) or ConRO_AoEButton:IsVisible() then
+				if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 20 and _LastCombo ~= _CracklingJadeLightning then
+					tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
+					_TheEmperorsCapacitor_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _WhirlingDragonPunch_RDY and _FistsofFury_CD > 0 and _RisingSunKick_CD > 0 and _LastCombo ~= _WhirlingDragonPunch then
-				tinsert(ConRO.SuggestedSpells, _WhirlingDragonPunch);
-				_WhirlingDragonPunch_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _WhirlingDragonPunch_RDY and _FistsofFury_CD > 0 and _RisingSunKick_CD > 0 and _LastCombo ~= _WhirlingDragonPunch then
+					tinsert(ConRO.SuggestedSpells, _WhirlingDragonPunch);
+					_WhirlingDragonPunch_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _StrikeoftheWindlord_RDY and _Chi >= 2 and _LastCombo ~= _StrikeoftheWindlord then
-				tinsert(ConRO.SuggestedSpells, _StrikeoftheWindlord);
-				_StrikeoftheWindlord_RDY = false;
-				_Chi = _Chi - 2;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _RisingSunKick_RDY and _Chi >= 2 and not _FistsofFury_RDY and _WhirlingDragonPunch_CD <= 0 and _LastCombo ~= _RisingSunKick then
+					tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+					_RisingSunKick_RDY = false;
+					_XuensBattlegear_BUFF = false;
+					_Chi = _Chi - 2;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _CelestialConduit_RDY and _LastCombo ~= _CelestialConduit and ConRO:HeroSpec(HeroSpec.ConduitoftheCelestials) then
-				tinsert(ConRO.SuggestedSpells, _CelestialConduit);
-				_CelestialConduit_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _StrikeoftheWindlord_RDY and _Chi >= 2 and _LastCombo ~= _StrikeoftheWindlord and ConRO:HeroSpec(HeroSpec.ShadoPan) then
+					tinsert(ConRO.SuggestedSpells, _StrikeoftheWindlord);
+					_StrikeoftheWindlord_RDY = false;
+					_Chi = _Chi - 2;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 18 and tChosen[Ability.PoweroftheThunderKing.talentID] and _LastCombo ~= _CracklingJadeLightning and ((ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 3) or ConRO_AoEButton:IsVisible()) then
-				tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
-				_TheEmperorsCapacitor_COUNT = 0;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if slicing_winds_rdy then
+					tinsert(ConRO.SuggestedSpells, slicing_winds);
+					slicing_winds_rdy = false;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _RisingSunKick_RDY and _Chi >= 2 and _LastCombo ~= _RisingSunKick and ((ConRO_AutoButton:IsVisible() and _enemies_in_melee <= 2) or ConRO_SingleButton:IsVisible() or _XuensBattlegear_BUFF) then
-				tinsert(ConRO.SuggestedSpells, _RisingSunKick);
-				_RisingSunKick_RDY = false;
-				_Chi = _Chi - 2;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 18 and _LastCombo ~= _CracklingJadeLightning and tChosen[Ability.PoweroftheThunderKing.talentID] then
+					tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
+					_TheEmperorsCapacitor_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _FistsofFury_RDY and _Chi >= 3 and _LastCombo ~= _FistsofFury then
-				tinsert(ConRO.SuggestedSpells, _FistsofFury);
-				_FistsofFury_RDY = false;
-				_Chi = _Chi - 3;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _FistsofFury_RDY and _Chi >= 3 and _LastCombo ~= _FistsofFury then
+					tinsert(ConRO.SuggestedSpells, _FistsofFury);
+					_FistsofFury_RDY = false;
+					_Chi = _Chi - 3;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _BlackoutKick_RDY and _Chi >= 1 and _TeachingsoftheMonastery_COUNT >= _TeachingsoftheMonastery_MAXCOUNT - 1 and _LastCombo ~= _BlackoutKick then
-				tinsert(ConRO.SuggestedSpells, _BlackoutKick);
-				_BlackoutKick_RDY = false;
-				_Chi = _Chi - 1;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _SpinningCraneKick_RDY and _Chi >= _Chi_Max and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE then
+					tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+					_SpinningCraneKick_RDY = false;
+					if dance_of_chiji_count > 0 then
+						dance_of_chiji_count = dance_of_chiji_count - 1;
+					else
+						_Chi = _Chi - 2;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _JadefireStomp_RDY and _LastCombo ~= _JadefireStomp then
-				tinsert(ConRO.SuggestedSpells, _JadefireStomp);
-				_JadefireStomp_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _RisingSunKick_RDY and _Chi >= 2 and _XuensBattlegear_BUFF and _LastCombo ~= _RisingSunKick then
+					tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+					_RisingSunKick_RDY = false;
+					_XuensBattlegear_BUFF = false;
+					_Chi = _Chi - 2;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and ((_FistsofFury_RANGE and _DanceofChiJi_COUNT >= 1) or (ConRO_AutoButton:IsVisible() and _enemies_in_melee >= 3) or ConRO_AoEButton:IsVisible()) then
-				tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
-				_SpinningCraneKick_RDY = false;
-				_DanceofChiJi_COUNT = _DanceofChiJi_COUNT - 1;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _JadefireStomp_RDY and _LastCombo ~= _JadefireStomp then
+					tinsert(ConRO.SuggestedSpells, _JadefireStomp);
+					_JadefireStomp_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _ChiBurst_RDY and _CracklingJadeLightning_RANGE and currentSpell ~= _ChiBurst and _LastCombo ~= _ChiBurst then
-				tinsert(ConRO.SuggestedSpells, _ChiBurst);
-				_ChiBurst_RDY = false;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _SpinningCraneKick_RDY and (_Chi >= 2 or dance_of_chiji_count >= 1) and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE then
+					tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+					_SpinningCraneKick_RDY = false;
+					if dance_of_chiji_count > 0 then
+						dance_of_chiji_count = dance_of_chiji_count - 1;
+					else
+						_Chi = _Chi - 2;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _BlackoutKick_RDY and _Chi >= 1 and _LastCombo ~= _BlackoutKick then
-				tinsert(ConRO.SuggestedSpells, _BlackoutKick);
-				_BlackoutKick_RDY = false;
-				_Chi = _Chi - 1;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _ChiBurst_RDY and _CracklingJadeLightning_RANGE and currentSpell ~= _ChiBurst and _LastCombo ~= _ChiBurst then
+					tinsert(ConRO.SuggestedSpells, _ChiBurst);
+					_ChiBurst_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
 
-			if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 18 and _LastCombo ~= _CracklingJadeLightning then
-				tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
-				_TheEmperorsCapacitor_COUNT = 0;
-				_Queue = _Queue + 1;
-				break;
-			end
+				if _BlackoutKick_RDY and _Chi >= 1 and _LastCombo ~= _BlackoutKick then
+					tinsert(ConRO.SuggestedSpells, _BlackoutKick);
+					_BlackoutKick_RDY = false;
+					if blackout_kick_count > 0 then
+						blackout_kick_count = blackout_kick_count - 1;
+					else
+						_Chi = _Chi - 1;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
+			else
+				if _StrikeoftheWindlord_RDY and _Chi >= 2 and _LastCombo ~= _StrikeoftheWindlord and ConRO:HeroSpec(HeroSpec.ShadoPan) then
+					tinsert(ConRO.SuggestedSpells, _StrikeoftheWindlord);
+					_StrikeoftheWindlord_RDY = false;
+					_Chi = _Chi - 2;
+					_Queue = _Queue + 1;
+					break;
+				end
 
+				if _WhirlingDragonPunch_RDY and _FistsofFury_CD > 0 and _RisingSunKick_CD > 0 and _LastCombo ~= _WhirlingDragonPunch then
+					tinsert(ConRO.SuggestedSpells, _WhirlingDragonPunch);
+					_WhirlingDragonPunch_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 20 and _LastCombo ~= _CracklingJadeLightning then
+					tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
+					_TheEmperorsCapacitor_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if slicing_winds_rdy then
+					tinsert(ConRO.SuggestedSpells, slicing_winds);
+					slicing_winds_rdy = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _FistsofFury_RDY and _Chi >= 3 and _LastCombo ~= _FistsofFury then
+					tinsert(ConRO.SuggestedSpells, _FistsofFury);
+					_FistsofFury_RDY = false;
+					_Chi = _Chi - 3;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _RisingSunKick_RDY and _Chi >= 2 and _LastCombo ~= _RisingSunKick then
+					tinsert(ConRO.SuggestedSpells, _RisingSunKick);
+					_RisingSunKick_RDY = false;
+					_XuensBattlegear_BUFF = false;
+					_Chi = _Chi - 2;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _BlackoutKick_RDY and _Chi >= 1 and _TeachingsoftheMonastery_COUNT >= _TeachingsoftheMonastery_MAXCOUNT and _LastCombo ~= _BlackoutKick then
+					tinsert(ConRO.SuggestedSpells, _BlackoutKick);
+					_BlackoutKick_RDY = false;
+					if blackout_kick_count > 0 then
+						blackout_kick_count = blackout_kick_count - 1;
+					else
+						_Chi = _Chi - 1;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _SpinningCraneKick_RDY and _LastCombo ~= _SpinningCraneKick and _FistsofFury_RANGE and dance_of_chiji_count >= 1 then
+					tinsert(ConRO.SuggestedSpells, _SpinningCraneKick);
+					_SpinningCraneKick_RDY = false;
+					dance_of_chiji_count = dance_of_chiji_count - 1;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _ChiBurst_RDY and _CracklingJadeLightning_RANGE and currentSpell ~= _ChiBurst and _LastCombo ~= _ChiBurst then
+					tinsert(ConRO.SuggestedSpells, _ChiBurst);
+					_ChiBurst_RDY = false;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _CracklingJadeLightning_RDY and _CracklingJadeLightning_RANGE and _TheEmperorsCapacitor_COUNT >= 18 and _LastCombo ~= _CracklingJadeLightning then
+					tinsert(ConRO.SuggestedSpells, _CracklingJadeLightning);
+					_TheEmperorsCapacitor_COUNT = 0;
+					_Queue = _Queue + 1;
+					break;
+				end
+
+				if _BlackoutKick_RDY and _Chi >= 1 and _LastCombo ~= _BlackoutKick then
+					tinsert(ConRO.SuggestedSpells, _BlackoutKick);
+					_BlackoutKick_RDY = false;
+					if blackout_kick_count > 0 then
+						blackout_kick_count = blackout_kick_count - 1;
+					else
+						_Chi = _Chi - 1;
+					end
+					_Queue = _Queue + 1;
+					break;
+				end
+			end
 			tinsert(ConRO.SuggestedSpells, 289603); --Waiting Spell Icon
 			_Queue = _Queue + 3;
 			break;
 		end
 	until _Queue >= 3;
-return nil;
+	return nil;
 end
 
 function ConRO.Monk.WindwalkerDef(_, timeShift, currentSpell, gcd, tChosen, pvpChosen)
 	wipe(ConRO.SuggestedDefSpells);
 	ConRO:Stats();
-	local Ability, Form, Buff, Debuff, PetAbility, PvPTalent = ids.Ww_Ability, ids.Ww_Form, ids.Ww_Buff, ids.Ww_Debuff, ids.Ww_PetAbility, ids.Ww_PvPTalent;
 
 --Abilities
 	local _ExpelHarm, _ExpelHarm_RDY = ConRO:AbilityReady(Ability.ExpelHarm, timeShift);
@@ -827,21 +1105,21 @@ function ConRO.Monk.WindwalkerDef(_, timeShift, currentSpell, gcd, tChosen, pvpC
 	end
 
 --Rotations
-		if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
-			tinsert(ConRO.SuggestedDefSpells, _ExpelHarm);
-		end
+	if _ExpelHarm_RDY and _Player_Percent_Health <= 50 then
+		tinsert(ConRO.SuggestedDefSpells, _ExpelHarm);
+	end
 
-		if _Vivify_RDY and _VivacousVivification_BUFF and _Player_Percent_Health <= 75 then
-			tinsert(ConRO.SuggestedDefSpells, _Vivify);
-		end
+	if _Vivify_RDY and _VivacousVivification_BUFF and _Player_Percent_Health <= 75 then
+		tinsert(ConRO.SuggestedDefSpells, _Vivify);
+	end
 
-		if _TouchofKarma_RDY then
-			tinsert(ConRO.SuggestedDefSpells, _TouchofKarma);
-		end
+	if _TouchofKarma_RDY then
+		tinsert(ConRO.SuggestedDefSpells, _TouchofKarma);
+	end
 
-		if _FortifyingBrew_RDY then
-			tinsert(ConRO.SuggestedDefSpells, _FortifyingBrew);
-		end
+	if _FortifyingBrew_RDY then
+		tinsert(ConRO.SuggestedDefSpells, _FortifyingBrew);
+	end
 	return nil;
 end
 
@@ -849,20 +1127,20 @@ local lastCombo = 0;
 
 function ConRO:ComboStrikes()
 	local spellList = {
-		ids.Ww_Ability.TigerPalm.spellID,
-		ids.Ww_Ability.BlackoutKick.spellID,
-		ids.Ww_Ability.RisingSunKick.spellID,
-		ids.Ww_Ability.FistsofFury.spellID,
-		ids.Ww_Ability.SpinningCraneKick.spellID,
-		ids.Ww_Ability.WhirlingDragonPunch.spellID,
-		ids.Ww_Ability.ChiBurst.spellID,
-		ids.Ww_Ability.CracklingJadeLightning.spellID,
-		ids.Ww_Ability.StrikeoftheWindlord.spellID,
+		Ability.TigerPalm.spellID,
+		Ability.BlackoutKick.spellID,
+		Ability.RisingSunKick.spellID,
+		Ability.FistsofFury.spellID,
+		Ability.SpinningCraneKick.spellID,
+		Ability.WhirlingDragonPunch.spellID,
+		Ability.ChiBurst.spellID,
+		Ability.CracklingJadeLightning.spellID,
+		Ability.StrikeoftheWindlord.spellID,
 		148187,
-		ids.Ww_Ability.TouchofDeath.spellID,
-		ids.Ww_Ability.JadefireStomp.spellID,
-		ids.Ww_Ability.StormEarthandFire.spellID,
-		ids.Ww_Ability.CelestialConduit.spellID,
+		Ability.TouchofDeath.spellID,
+		Ability.JadefireStomp.spellID,
+		Ability.StormEarthandFire.spellID,
+		Ability.CelestialConduit.spellID,
 	}
 
 	for _, v in ipairs(spellList) do
